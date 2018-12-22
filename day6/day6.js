@@ -1,5 +1,4 @@
 const fs = require('fs');
-
 let data = fs.readFileSync('./data', 'utf8');
 // let data = fs.readFileSync('./test', 'utf8');
 
@@ -35,8 +34,6 @@ function initializeMatrix() {
   }
   return matrix;
 }
-let globalPointCounter = 1;
-const cartesianMap = initializeMatrix();
 
 function calculateDistance(currX, currY, coord) {
   const xDist = Math.abs(currX - coord[0]);
@@ -65,13 +62,6 @@ function loopAndAssign(matrix, coordinate, id) {
   }
 }
 
-data.forEach(coordinate => {
-  const x = coordinate[0];
-  const y = coordinate[1];
-  cartesianMap[y][x].id = globalPointCounter;
-  loopAndAssign(cartesianMap, coordinate, globalPointCounter);
-  globalPointCounter++;
-});
 // console.log(cartesianMap);
 
 function findIdOnEdge(matrix) {
@@ -138,6 +128,41 @@ function determineLargestArea(matrix, edgeIds) {
   }
   return answer;
 }
-const edges = findIdOnEdge(cartesianMap);
-// console.log(edges)
-console.log(determineLargestArea(cartesianMap, edges));
+
+function loopAndFindDistance(matrix, coordinateArr) {
+  const threshold = 10000;
+  for (let y = 0; y < matrix.length; y++) {
+    for (let x = 0; x < matrix[y].length; x++) {
+      const currCoord = matrix[y][x];
+      const sumOfDistance = coordinateArr.reduce((acc, next) => {
+        return acc + calculateDistance(x, y, next);
+      }, 0);
+      if (sumOfDistance < threshold) {
+        part2answer++;
+      }
+    }
+  }
+}
+
+let globalPointCounter = 1;
+let part2answer = 0;
+
+function main() {
+  const cartesianMap = initializeMatrix();
+
+  data.forEach(coordinate => {
+    const x = coordinate[0];
+    const y = coordinate[1];
+    cartesianMap[y][x].id = globalPointCounter;
+    loopAndAssign(cartesianMap, coordinate, globalPointCounter);
+    globalPointCounter++;
+  });
+
+  const edges = findIdOnEdge(cartesianMap);
+  // console.log(determineLargestArea(cartesianMap, edges));
+
+  loopAndFindDistance(cartesianMap, data);
+  console.log(part2answer);
+}
+
+main();
