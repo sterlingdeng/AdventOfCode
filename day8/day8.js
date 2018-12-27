@@ -4,28 +4,51 @@ let data = fs.readFileSync('./data', 'utf8');
 data = data.split(' ');
 
 let idx = 0;
-const metadata = [];
+const globalMetaData = [];
 
 function getHeader() {
-  const numberOfChildren = data[idx];
-  idx += 1;
-  const numberOfMetadataEntries = data[idx];
-  idx += 1;
+  const localMetaData = [];
+  const valueOfChildren = [];
+
+  const numberOfChildren = Number(data[idx]);
+  const numberOfMetadataEntries = Number(data[idx + 1]);
+  idx += 2;
+
   for (let i = 0; i < numberOfChildren; i++) {
-    getHeader();
+    valueOfChildren[i] = getHeader();
   }
 
   for (let i = 0; i < numberOfMetadataEntries; i++) {
-    metadata.push(Number(data[idx]));
+    globalMetaData.push(Number(data[idx]));
+    localMetaData.push(Number(data[idx]));
     idx += 1;
   }
+
+  if (numberOfChildren === 0) {
+    return localMetaData.reduce((acc, curr) => acc + curr);
+  }
+
+  const valueOfNode = [];
+
+  localMetaData.forEach(childIdx => {
+    if (childIdx <= numberOfChildren && childIdx !== 0) {
+      console.log(childIdx, numberOfChildren);
+      valueOfNode.push(valueOfChildren[childIdx - 1]);
+    }
+  });
+
+  if (valueOfNode.length > 0) {
+    const sum = valueOfNode.reduce((acc, curr) => acc + curr);
+    return sum;
+  }
+
+  return 0;
 }
 
 // Entry point for program
-getHeader();
+const valueOfRoot = getHeader();
 
-const sum = metadata.reduce((acc, curr) => {
-  return acc + curr;
-});
+const sum = globalMetaData.reduce((acc, curr) => acc + curr);
 
-console.log(sum);
+console.log(sum); // 36027
+console.log(valueOfRoot); // 23960
