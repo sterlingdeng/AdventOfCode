@@ -72,7 +72,7 @@ class CircularLinkedList {
 }
 
 const game = new CircularLinkedList();
-const max_points = 71864;
+const max_points = 71864 * 100;
 const max_player = 400;
 let currentMarble = 1;
 let currentPlayer = 1;
